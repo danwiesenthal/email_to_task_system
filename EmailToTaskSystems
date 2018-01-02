@@ -1,0 +1,106 @@
+// Setup instructions to live here
+
+// User set variables:
+var omniEmail = 'YOUR_OMNIFOCUS_EMAIL_HERE';
+var omniProcessedLabel = GmailApp.getUserLabelByName('Script_Processed/Omni');
+var thingsEmail = 'YOUR_THINGS_EMAIL_HERE';
+var thingsProcessedLabel = GmailApp.getUserLabelByName('Script_Processed/Things');
+// Tie it all together:
+var emailLabelPairs = [[omniEmail, omniProcessedLabel], [thingsEmail, thingsProcessedLabel]];
+
+// Let's be gross and use global constants
+var HEADER_FIELD_TO_USE_AS_MESSAGE_ID = 'Message-Id'.toLowerCase();
+var UNABLE_TO_PARSE_MESSAGE_ID = 'Unable to parse universal Message-Id';
+
+
+function getUniversalMessageId(message) {
+  Logger.log('Getting universal message id for message %s', message);
+  var rawContent = message.getRawContent();
+  Logger.log('raw_content: %s', rawContent);
+  var rawContentLines = rawContent.split('\n');
+  Logger.log('raw_content_lines: %s', rawContentLines);
+  Logger.log('Raw content has %s lines', rawContentLines.length);
+  for (var i = 0; i < rawContentLines.length; i++){
+    var line = rawContentLines[i];
+    Logger.log('line: %s', line);
+    Logger.log('type of line: %s', typeof(line));
+    Logger.log('substring: %s', line.substring(0, 10));
+    if (line.substring(0, 10).toLowerCase() === HEADER_FIELD_TO_USE_AS_MESSAGE_ID) {
+      var messageIdComponents = line.split(' ');
+      Logger.log('message_id_components: %s', messageIdComponents);
+      var idWithAligatorBrackets = messageIdComponents[1];
+      Logger.log('id_with_aligagtor_brackets: %s', idWithAligatorBrackets);
+      var messageId = idWithAligatorBrackets.slice(1, idWithAligatorBrackets.length - 2);
+      Logger.log('Universal Message-ID parsed from header: %s', messageId);
+      return messageId;
+    };
+  };
+  Logger.log('Unable to parse universal Message-ID');
+  var indexOfMessageId = rawContent.toLowerCase().indexOf(HEADER_FIELD_TO_USE_AS_MESSAGE_ID);
+  var debugContext = '\n';
+  debugContext.concat('\n indexOfMessageId: %s', indexOfMessageId);
+  debugContext.concat('\n message around index: %s', rawContent.substring(indexOfMessageId - 10, indexOfMessageId + 30));
+  return UNABLE_TO_PARSE_MESSAGE_ID.concat(debugContext);
+  //return UNABLE_TO_PARSE_MESSAGE_ID;
+};
+
+function SendNewMessageWithCustomBody(originalMessage) {
+  // Create subject and body of new message to send
+  var prefixedSubject = '[OF] ' + originalMessage.getSubject();
+  var body = originalMessage.getPlainBody() ? originalMessage.getPlainBody() : originalMessage.getBody();  
+  
+  // Try to get the universal message id
+  var messageId = getUniversalMessageId(originalMessage);
+  if (messageId === UNABLE_TO_PARSE_MESSAGE_ID) {
+    var messageLink = 'Unable to parse out message id';
+  } else {
+    var messageLink = 'message://%3C' + messageId + '%3E';
+  };
+  
+  // Modify message body to include message link
+  var bodyWithLink = 'Message Link: '+ messageLink + '\n\n' + body;
+  
+  // Send out the email to all emails listed in email_label_pairs
+  Logger.log('emailLabelPairs in send func: %s', emailLabelPairs);
+  emailLabelPairs.forEach(function(emailLabelPair) {
+    GmailApp.sendEmail(emailLabelPair[0], prefixedSubject, bodyWithLink);
+  });
+};
+
+function markImportantAddLabelsUnstarMessagesArchiveThread(thread) {
+  // Mark the thread important
+  thread.markImportant();
+  
+  // Add each processed label to the thread
+  emailLabelPairs.forEach(function(emailLabelPair) {
+    thread.addLabel(emailLabelPair[1]);
+  });
+  
+  // Unstar each message in the thread
+  var messages = thread.getMessages();
+  messages.forEach(function(message) {
+    message.unstar();
+  });
+  
+  // Archive the thread
+  GmailApp.moveThreadToArchive(thread);
+};
+
+function main() {
+  Logger.log('Beginning main');
+
+  // Go through the inbox threads:
+  var inbox_threads = GmailApp.getInboxThreads();
+  inbox_threads.forEach(function(thread) {
+    var messages = thread.getMessages().reverse();
+    messages.forEach(function(message) {
+      if (message.isStarred()) {
+        // For the most recent (if any) starred message in each thread:
+        SendNewMessageWithCustomBody(message);
+        markImportantAddLabelsUnstarMessagesArchiveThread(thread);
+      };
+    });
+  });
+};
+
+
