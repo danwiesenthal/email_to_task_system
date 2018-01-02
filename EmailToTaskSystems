@@ -1,12 +1,48 @@
-// Setup instructions to live here
+// Setup instructions:
+// This script will connect your email inbox to a task system that accepts email input.
+// For example, OmniFocus, Things, Asana, and Evernote all accept email input.
+// You can find more about OmniFocus email input here:  https://support.omnigroup.com/omnifocus-mail-drop/
+// Or Evernote email input here:  https://blog.evernote.com/blog/2012/04/20/quick-tip-friday-emailing-into-your-evernote-account/
+// Or Asana email input here:  https://asana.com/guide/help/email/email-to-asana
+// These systems all have you forward email to a specific email address which they then process.
+// To configure this script to work for you, you simply need to find the email address to which you're supposed
+// to forward your emails.  Then fill that in below in place of the all-caps YOUR_SOMETHING_EMAIL_HERE text.
+// This script can connect to multiple systems, so for example, if you want to use both OmniFocus and Things,
+// you can set both OmniFocus and Things emails below.  
+// Lastly, you need to create a label (Gmail's version of a 'folder') that will be applied
+// to processed emails. The label Script_Processed/Omni is a folder of labels called Script_Processed, inside
+// of which is a label called Omni.
+// If you don't need to use multiple services, no worries, you can set just one email and label pair.
 
-// User set variables:
+
+// ________________Add Your Configuration Here_________________
+// Add your email address(es) and label(s):
+
+// for OmniFocus, for example:
 var omniEmail = 'YOUR_OMNIFOCUS_EMAIL_HERE';
 var omniProcessedLabel = GmailApp.getUserLabelByName('Script_Processed/Omni');
+
+// If you're using just one service, you're done since we only have one email-label pair:
+var emailLabelPairs = [[omniEmail, omniProcessedLabel]];
+
+
+// If using multiple services...
+// ...you can keep adding more in the same way (eg Things)
 var thingsEmail = 'YOUR_THINGS_EMAIL_HERE';
 var thingsProcessedLabel = GmailApp.getUserLabelByName('Script_Processed/Things');
-// Tie it all together:
+
+// ...and then tie them all together as a list of pairs
 var emailLabelPairs = [[omniEmail, omniProcessedLabel], [thingsEmail, thingsProcessedLabel]];
+// ...so that emails will be sent to each of these services.
+
+// ________________You're Done Configuration!_________________
+
+
+
+
+// No need to read below this line unless you want to!  
+// If you've put your email and label information in above, you're good to go :)
+
 
 // Let's be gross and use global constants
 var HEADER_FIELD_TO_USE_AS_MESSAGE_ID = 'Message-Id'.toLowerCase();
