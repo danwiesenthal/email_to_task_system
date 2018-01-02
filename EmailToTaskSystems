@@ -1,19 +1,63 @@
-// Setup instructions:
+// Setup Instructions:
 // This script will connect your email inbox to a task system that accepts email input.
 // For example, OmniFocus, Things, Asana, and Evernote all accept email input.
 // You can find more about OmniFocus email input here:  https://support.omnigroup.com/omnifocus-mail-drop/
 // Or Evernote email input here:  https://blog.evernote.com/blog/2012/04/20/quick-tip-friday-emailing-into-your-evernote-account/
 // Or Asana email input here:  https://asana.com/guide/help/email/email-to-asana
 // These systems all have you forward email to a specific email address which they then process.
+
+// Before you start:
+// This script helps you connect your emails to a task system, so that you can very quickly
+// triage emails into archive (reference) or your task system for further action.
+// This process is designed to work with an "inbox zero" approach, where your email inbox
+// is frequently triaged and maintaimed close to zero.  If you aren't already close to zero,
+// you can still use this system, but you'll want to move all the emails currently in your inbox
+// elsewhere, perhaps a folder/label called Old_Inbox, so they aren't affected by this script.
+// Once configured, this script will scan your inbox every minute, and find emails that are
+// flagged/starred.  It will then forward them to your task system.  Once it does that, it will 
+// unstar the message, mark the thread that it was in (including the message itself) as Important,
+// and archive the thread.  It will also apply a label to the thread, so you can quickly find all
+// emails that have been processed with this script, should you want to.  
+// If you currently have flagged/starred messages in your inbox and you enable this script, those
+// emails will be marked important, have a 'Script_Processed' label applied, unstarred/unfledged,
+// and moved to your archive.
+
+
+// There are two main steps to turning this script on: configuring your service, and turning on the script.
+
+// 1) Configuring your service:
 // To configure this script to work for you, you simply need to find the email address to which you're supposed
-// to forward your emails.  Then fill that in below in place of the all-caps YOUR_SOMETHING_EMAIL_HERE text.
+// to forward your emails.  Then fill that in below in place of the all-caps YOUR_*_EMAIL_HERE text.
 // This script can connect to multiple systems, so for example, if you want to use both OmniFocus and Things,
-// you can set both OmniFocus and Things emails below.  
+// you can set both OmniFocus and Things emails.  
 // Lastly, you need to create a label (Gmail's version of a 'folder') that will be applied
 // to processed emails. The label Script_Processed/Omni is a folder of labels called Script_Processed, inside
 // of which is a label called Omni.
 // If you don't need to use multiple services, no worries, you can set just one email and label pair.
+// This is probably easiest by reading the example below, and replacing the ALL_CAPS_TEXT with your email
+// and the label with your chosen label.
 
+// 2) Turning on this script:
+// Go to script.google.com
+// Click Start Scripting
+// You should see an editor showing a file, currently called Code.gs, and an empty function myFunction
+// Delete everything in Code.gs so it is empty
+// Copy this entire script and paste it into Code.gs
+// Double-check that you have configure the script per step 1 of these instructions, with
+// the correct emails and gmail labels.  Make sure to check that the gmail labels you chose
+// are labels (/folders) that have already been created; this script doesn't create them for you
+// Name your Google Script something other than Untitled project.  For example, EmailToTaskSystems
+// Save your script with File>Save
+// Go to Edit>All your triggers
+// Click Add a new trigger
+// In the leftmost dropdown (run) choose Main
+// In the Events dropdowns chooose: Time-driven, Minutes timer, Every minute
+// Click Save
+
+// Now send yourself a test email (from a different account, to keep things straight)
+// When that email appears in your inbox, flag it
+// Wait 60 seconds
+// Check your task system; your task should be there!
 
 // ________________Add Your Configuration Here_________________
 // Add your email address(es) and label(s):
