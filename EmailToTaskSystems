@@ -10,7 +10,7 @@
 // This script helps you connect your emails to a task system, so that you can very quickly
 // triage emails into archive (reference) or your task system for further action.
 // This process is designed to work with an "inbox zero" approach, where your email inbox
-// is frequently triaged and maintaimed close to zero.  If you aren't already close to zero,
+// is frequently triaged and maintained close to zero.  If you aren't already close to zero,
 // you can still use this system, but you'll want to move all the emails currently in your inbox
 // elsewhere, perhaps a folder/label called Old_Inbox, so they aren't affected by this script.
 // Once configured, this script will scan your inbox every minute, and find emails that are
@@ -19,7 +19,7 @@
 // and archive the thread.  It will also apply a label to the thread, so you can quickly find all
 // emails that have been processed with this script, should you want to.  
 // If you currently have flagged/starred messages in your inbox and you enable this script, those
-// emails will be marked important, have a 'Script_Processed' label applied, unstarred/unfledged,
+// emails will be marked important, have a 'Script_Processed' label applied, unstarred/unflagged,
 // and moved to your archive.
 
 
