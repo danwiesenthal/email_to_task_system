@@ -35,13 +35,17 @@ function getUniversalMessageId(message) {
       return messageId;
     };
   };
-  Logger.log('Unable to parse universal Message-ID');
-  var indexOfMessageId = rawContent.toLowerCase().indexOf(HEADER_FIELD_TO_USE_AS_MESSAGE_ID);
-  var debugContext = '\n';
-  debugContext.concat('\n indexOfMessageId: %s', indexOfMessageId);
-  debugContext.concat('\n message around index: %s', rawContent.substring(indexOfMessageId - 10, indexOfMessageId + 30));
-  return UNABLE_TO_PARSE_MESSAGE_ID.concat(debugContext);
-  //return UNABLE_TO_PARSE_MESSAGE_ID;
+  
+  // If we want to debug why we can't parse a partitular message id, we can enable this to help:
+  // Logger.log('Unable to parse universal Message-ID');
+  // var indexOfMessageId = rawContent.toLowerCase().indexOf(HEADER_FIELD_TO_USE_AS_MESSAGE_ID);
+  // var debugContext = '\n';
+  // debugContext.concat('\n indexOfMessageId: %s', indexOfMessageId);
+  // debugContext.concat('\n message around index: %s', rawContent.substring(indexOfMessageId - 10, indexOfMessageId + 30));
+  //return UNABLE_TO_PARSE_MESSAGE_ID.concat(debugContext);
+  
+  // If we can't parse out a message id but don't care to debug it, we can just return our failure
+  return UNABLE_TO_PARSE_MESSAGE_ID;
 };
 
 function SendNewMessageWithCustomBody(originalMessage) {
@@ -102,5 +106,3 @@ function main() {
     });
   });
 };
-
-
