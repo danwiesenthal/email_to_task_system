@@ -71,12 +71,12 @@ var emailLabelPairs = [[omniEmail, omniProcessedLabel]];
 
 
 // If using multiple services...
-// ...you can keep adding more in the same way (eg Things)
-var thingsEmail = 'YOUR_THINGS_EMAIL_HERE';
-var thingsProcessedLabel = GmailApp.getUserLabelByName('Script_Processed/Things');
+// ...you can keep adding more in the same way (eg Things) (uncomment the next two lines):
+// var thingsEmail = 'YOUR_THINGS_EMAIL_HERE';
+// var thingsProcessedLabel = GmailApp.getUserLabelByName('Script_Processed/Things');
 
-// ...and then tie them all together as a list of pairs
-var emailLabelPairs = [[omniEmail, omniProcessedLabel], [thingsEmail, thingsProcessedLabel]];
+// ...and then tie them all together as a list of pairs (uncomment the next line):
+// var emailLabelPairs = [[omniEmail, omniProcessedLabel], [thingsEmail, thingsProcessedLabel]];
 // ...so that emails will be sent to each of these services.
 
 // ________________You're Done Configuration!_________________
