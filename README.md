@@ -2,9 +2,9 @@
 This repo holds a simple Google Script to connect your email and task systems.
 
 For example, OmniFocus, Things, Asana, and Evernote all accept email input.
-You can find more about OmniFocus email input here:  https://support.omnigroup.com/omnifocus-mail-drop/
-Or Evernote email input here:  https://blog.evernote.com/blog/2012/04/20/quick-tip-friday-emailing-into-your-evernote-account/
-Or Asana email input here:  https://asana.com/guide/help/email/email-to-asana
+- You can find more about OmniFocus email input here:  https://support.omnigroup.com/omnifocus-mail-drop/
+- Or Evernote email input here:  https://blog.evernote.com/blog/2012/04/20/quick-tip-friday-emailing-into-your-evernote-account/
+- Or Asana email input here:  https://asana.com/guide/help/email/email-to-asana
 
 These systems all have you forward email to a specific email address which they then process; this script makes that process easier and bidirectional.
 
