@@ -30,7 +30,7 @@ Configuring your service:
 - Instead of the default sample script, we'll use the script in this repo.
 - Copy the contents of EmailToTaskSystems in this repo, and paste into the Google Script you just created.
 - Update the script:
-  - Where the script has YOUR_EMAIL_HERE, paste your task system email that you found in the Preparation steps above.
+  - Where the script has YOUR_TASK_SYSTEM_EMAIL_HERE, paste your task system email that you found in the Preparation steps above.
   - If you don't want to use the default Script_Processed/Tasks label, put your desired label in the script right below the email you just pasted.
   
 ## Turn on Gmail API
