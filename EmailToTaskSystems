@@ -1,83 +1,12 @@
-// Setup Instructions:
-// This script will connect your email inbox to a task system that accepts email input.
-// For example, OmniFocus, Things, Asana, and Evernote all accept email input.
-// You can find more about OmniFocus email input here:  https://support.omnigroup.com/omnifocus-mail-drop/
-// Or Evernote email input here:  https://blog.evernote.com/blog/2012/04/20/quick-tip-friday-emailing-into-your-evernote-account/
-// Or Asana email input here:  https://asana.com/guide/help/email/email-to-asana
-// These systems all have you forward email to a specific email address which they then process.
-
-// Before you start:
-// This script helps you connect your emails to a task system, so that you can very quickly
-// triage emails into archive (reference) or your task system for further action.
-// This process is designed to work with an "inbox zero" approach, where your email inbox
-// is frequently triaged and maintained close to zero.  If you aren't already close to zero,
-// you can still use this system, but you'll want to move all the emails currently in your inbox
-// elsewhere, perhaps a folder/label called Old_Inbox, so they aren't affected by this script.
-// Once configured, this script will scan your inbox every minute, and find emails that are
-// flagged/starred.  It will then forward them to your task system.  Once it does that, it will 
-// unstar the message, mark the thread that it was in (including the message itself) as Important,
-// and archive the thread.  It will also apply a label to the thread, so you can quickly find all
-// emails that have been processed with this script, should you want to.  
-// If you currently have flagged/starred messages in your inbox and you enable this script, those
-// emails will be marked important, have a 'Script_Processed' label applied, unstarred/unflagged,
-// and moved to your archive.
-
-
-// There are two main steps to turning this script on: configuring your service, and turning on the script.
-
-// 1) Configuring your service:
-// To configure this script to work for you, you simply need to find the email address to which you're supposed
-// to forward your emails.  Then fill that in below in place of the all-caps YOUR_*_EMAIL_HERE text.
-// This script can connect to multiple systems, so for example, if you want to use both OmniFocus and Things,
-// you can set both OmniFocus and Things emails.  
-// Lastly, you need to create a label (Gmail's version of a 'folder') that will be applied
-// to processed emails. The label Script_Processed/Omni is a folder of labels called Script_Processed, inside
-// of which is a label called Omni.
-// If you don't need to use multiple services, no worries, you can set just one email and label pair.
-// This is probably easiest by reading the example below, and replacing the ALL_CAPS_TEXT with your email
-// and the label with your chosen label.
-
-// 2) Turning on this script:
-// Go to script.google.com
-// Click Start Scripting
-// You should see an editor showing a file, currently called Code.gs, and an empty function myFunction
-// Delete everything in Code.gs so it is empty
-// Copy this entire script and paste it into Code.gs
-// Double-check that you have configure the script per step 1 of these instructions, with
-// the correct emails and gmail labels.  Make sure to check that the gmail labels you chose
-// are labels (/folders) that have already been created; this script doesn't create them for you
-// Name your Google Script something other than Untitled project.  For example, EmailToTaskSystems
-// Save your script with File>Save
-// Go to Edit>All your triggers
-// Click Add a new trigger
-// In the leftmost dropdown (run) choose Main
-// In the Events dropdowns chooose: Time-driven, Minutes timer, Every minute
-// Click Save
-
-// Now send yourself a test email (from a different account, to keep things straight)
-// When that email appears in your inbox, flag it
-// Wait 60 seconds
-// Check your task system; your task should be there!
-
 // ________________Add Your Configuration Here_________________
 // Add your email address(es) and label(s):
 
-// for OmniFocus, for example:
-var omniEmail = 'YOUR_OMNIFOCUS_EMAIL_HERE';
-var omniProcessedLabel = GmailApp.getUserLabelByName('Script_Processed/Omni');
-
-// If you're using just one service, you're done since we only have one email-label pair:
-var emailLabelPairs = [[omniEmail, omniProcessedLabel]];
-
-
-// If using multiple services...
-// ...you can keep adding more in the same way (eg Things) (uncomment the next two lines):
-// var thingsEmail = 'YOUR_THINGS_EMAIL_HERE';
-// var thingsProcessedLabel = GmailApp.getUserLabelByName('Script_Processed/Things');
-
-// ...and then tie them all together as a list of pairs (uncomment the next line):
-// var emailLabelPairs = [[omniEmail, omniProcessedLabel], [thingsEmail, thingsProcessedLabel]];
-// ...so that emails will be sent to each of these services.
+// paste your task system ingest email here:
+var taskEmail = 'YOUR_TASK_SYSTEM_EMAIL_HERE';
+// update this label if you don't like the default:
+var taskProcessedLabelString = 'Script_Processed/Tasks';
+// update this prefix if you don't like the default:
+var taskPrefix = '[Task] '
 
 // ________________You're Done Configuration!_________________
 
@@ -87,6 +16,10 @@ var emailLabelPairs = [[omniEmail, omniProcessedLabel]];
 // No need to read below this line unless you want to!  
 // If you've put your email and label information in above, you're good to go :)
 
+
+// using just one service, wrap up as email-label pair:
+// (this structure allows usage of multiple services for advanced users)
+var emailLabelPairs = [[taskEmail, taskProcessedLabelString]];
 
 // Let's be gross and use global constants
 var HEADER_FIELD_TO_USE_AS_MESSAGE_ID = 'Message-Id'.toLowerCase();
@@ -108,29 +41,31 @@ function getUniversalMessageId(message) {
     if (line.substring(0, 10).toLowerCase() === HEADER_FIELD_TO_USE_AS_MESSAGE_ID) {
       var messageIdComponents = line.split(' ');
       Logger.log('message_id_components: %s', messageIdComponents);
-      var idWithAligatorBrackets = messageIdComponents[1];
-      Logger.log('id_with_aligagtor_brackets: %s', idWithAligatorBrackets);
-      var messageId = idWithAligatorBrackets.slice(1, idWithAligatorBrackets.length - 2);
+
+      // at this point, either messageIdComponents[1] holds the Message-ID value (with brackets),
+      // or the sender (eg outlook which behaves differently) has a newline following the Message-ID key and the actual value
+      // is on the next line
+      if (typeof messageIdComponents[1] === "undefined") {
+        Logger.log("Message-ID header line appears to be split into two lines");
+        Logger.log("Next line: " + rawContentLines[i + 1]);
+        var idWithAligatorBrackets = rawContentLines[i + 1];
+      } else {
+        var idWithAligatorBrackets = messageIdComponents[1];
+      };
+      Logger.log('id_with_aligagtor_brackets: %s', idWithAligatorBrackets);      
+      
+      var messageId = idWithAligatorBrackets.split('<')[1].split('>')[0];      
+
       Logger.log('Universal Message-ID parsed from header: %s', messageId);
       return messageId;
     };
   };
-  
-  // If we want to debug why we can't parse a partitular message id, we can enable this to help:
-  // Logger.log('Unable to parse universal Message-ID');
-  // var indexOfMessageId = rawContent.toLowerCase().indexOf(HEADER_FIELD_TO_USE_AS_MESSAGE_ID);
-  // var debugContext = '\n';
-  // debugContext.concat('\n indexOfMessageId: %s', indexOfMessageId);
-  // debugContext.concat('\n message around index: %s', rawContent.substring(indexOfMessageId - 10, indexOfMessageId + 30));
-  //return UNABLE_TO_PARSE_MESSAGE_ID.concat(debugContext);
-  
-  // If we can't parse out a message id but don't care to debug it, we can just return our failure
   return UNABLE_TO_PARSE_MESSAGE_ID;
 };
 
 function SendNewMessageWithCustomBody(originalMessage) {
   // Create subject and body of new message to send
-  var prefixedSubject = '[OF] ' + originalMessage.getSubject();
+  var prefixedSubject = taskPrefix + originalMessage.getSubject();
   var body = originalMessage.getPlainBody() ? originalMessage.getPlainBody() : originalMessage.getBody();  
   
   // Try to get the universal message id
@@ -138,11 +73,11 @@ function SendNewMessageWithCustomBody(originalMessage) {
   if (messageId === UNABLE_TO_PARSE_MESSAGE_ID) {
     var messageLink = 'Unable to parse out message id';
   } else {
-    var messageLink = 'message://%3C' + messageId + '%3E';
+    var messageLink = 'message:<' + messageId + '>';
   };
   
   // Modify message body to include message link
-  var bodyWithLink = 'Message Link: '+ messageLink + '\n\n' + body;
+  var bodyWithLink = 'View Message in Mail: '+ messageLink + '\n\n' + body;
   
   // Send out the email to all emails listed in email_label_pairs
   Logger.log('emailLabelPairs in send func: %s', emailLabelPairs);
@@ -152,27 +87,36 @@ function SendNewMessageWithCustomBody(originalMessage) {
 };
 
 function markImportantAddLabelsUnstarMessagesArchiveThread(thread) {
+
+  Logger.log('Marking thread important');
   // Mark the thread important
   thread.markImportant();
   
+  Logger.log('Adding processed labels');
   // Add each processed label to the thread
   emailLabelPairs.forEach(function(emailLabelPair) {
-    thread.addLabel(emailLabelPair[1]);
+    // (we delay getting the actual label as long as possible because of rate limits:)
+    var actualLabel = GmailApp.getUserLabelByName(emailLabelPair[1]);
+    thread.addLabel(actualLabel);
   });
   
+  Logger.log('Unstarring messages in thread');
   // Unstar each message in the thread
-  var messages = thread.getMessages();
-  messages.forEach(function(message) {
+  var thread_messages = thread.getMessages();
+  thread_messages.forEach(function(message) {
     message.unstar();
   });
   
+  Logger.log('Archiving the thread');
   // Archive the thread
   GmailApp.moveThreadToArchive(thread);
+  
+  Logger.log('Leaving markImportant... function');
 };
 
 function main() {
   Logger.log('Beginning main');
-
+  
   // Go through the inbox threads:
   var inbox_threads = GmailApp.getInboxThreads();
   inbox_threads.forEach(function(thread) {
@@ -186,3 +130,4 @@ function main() {
     });
   });
 };
+
