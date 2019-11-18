@@ -13,7 +13,7 @@ This script helps you connect your emails to a task system, so that you can quic
 
 This process is designed to work with an "inbox zero" approach, where your email inbox is frequently triaged and maintained close to zero.  (If you aren't already close to zero, you can still use this system, but you'll want to move all the emails currently in your inbox elsewhere, perhaps a folder/label called Old_Inbox, so they aren't affected by this script.)
 
-Once configured, this script will scan your inbox every so often, and find emails that are flagged/starred.  It will then forward them to your task system.  Once it does that, it will unstar the message, mark the thread that it was in (including the message itself) as Important (to help train the ML systems), and archive the thread.  It will also apply a label to the thread, so you can quickly find all emails that have been processed with this script, should you want to.  
+Once configured, this script will scan your inbox every so often, and find emails that are flagged/starred.  It will then forward them to your task system.  Once it does that, it will unstar the message, mark the thread that it was in (including the message itself) as Important (to help train the ML systems), and archive the thread.  It will also apply a label to the thread, so you can quickly find all emails that have been processed with this script, should you want to.
 
 If you currently have flagged/starred messages in your inbox and you enable this script, those emails will be processed as tasks: marked important, have a 'Script_Processed' label applied, unstarred/unflagged, and moved to your archive.  If this isn't what you want, you might consider moving your flagged/starred messages elsewhere, unflagging/unstarring them, or applying a label to them and then removing their flag/star.
 
@@ -32,7 +32,7 @@ Configuring your service:
 - Update the script:
   - Where the script has YOUR_TASK_SYSTEM_EMAIL_HERE, paste your task system email that you found in the Preparation steps above.
   - If you don't want to use the default Script_Processed/Tasks label, put your desired label in the script right below the email you just pasted.
-  
+
 ## Turn on Gmail API
 - In the Apps Script editor, click Resources > Advanced Google Services
 - Locate Gmail API in the list, and click the corresponding toggle, setting it to 'on'
@@ -61,4 +61,4 @@ Configuring your service:
 - Now your script will run every 10 minutes up in the cloud.  Yay!
 
 # Usage
-- When emails arrive in your inbox, read them and decide whether they require further action.  If they don't, archive them.  If they do, star them.  You're done.  Every time the script runs, those starred emails will disappear from your inbox, and appear in your task system.  Now you're using a task system for your tasks... as it should be.  If you need to get back to the email in question while you're doing a task, just click/tap the View Message in Mail link in the task's "note" field (for OmniFocus; other systems place it elsewhere).  If you want to find all the emails associated with tasks, look in your Script_Processed/Tasks label in your email.  Enjoy!
+- When emails arrive in your inbox, read them and decide whether they require further action.  If they don't, archive them.  If they do, star them.  You're done.  Every time the script runs, those starred emails will be moved out of your email system's inbox and and appear in your task system's inbox.  (Don't worry, the emails are not gone.  They've been marked Important, unstarred, and Archived.)  Now you're using a task system for your tasks... as it should be.  If you need to get back to the email in question while you're doing a task, just click/tap the View Message in Mail link in the task's "note" field (for OmniFocus; other systems place it elsewhere)... or find it in your Script_Processed/Tasks label/folder... or find it in your Archive/All Mail.  If you want to find all the emails associated with tasks, look in your Script_Processed/Tasks label/folder in your email.  Enjoy!
