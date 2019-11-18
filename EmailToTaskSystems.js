@@ -2,7 +2,7 @@
 // Add your email address(es) and label(s):
 
 // paste your task system ingest email here:
-var taskEmail = 'YOUR_TASK_SYSTEMS_EMAIL_HERE';
+var taskEmail = 'YOUR_TASK_SYSTEM_EMAIL_HERE';
 // update this label if you don't like the default:
 var taskProcessedLabelString = 'Script_Processed/Tasks';
 // update this prefix if you don't like the default:
@@ -48,9 +48,11 @@ function getUniversalMessageId(message) {
       var messageIdComponents = line.split(' ');
       Logger.log('messageIdComponents: %s', messageIdComponents);
 
-      // at this point, either messageIdComponents[1] holds the Message-ID value (with brackets),
-      // or the sender (eg outlook ugh) has a newline following the Message-ID key and the actual value
-      // is on the next line (with this line being either undefined or a newline)
+      // at this point, either messageIdComponents[1] holds the Message-ID
+      // value (with brackets), or the sender (eg outlook which behaves
+      // differently) has a newline following the Message-ID key and the actual
+      // value is on the next line (with this line being either undefined or a
+      // newline)
       if ((typeof messageIdComponents[1] === "undefined") || (messageIdComponents[1].length <= 1)) {
         Logger.log("Message-ID header line appears to be split into two lines");
         Logger.log("Next line: " + rawContentLines[i + 1]);
@@ -67,7 +69,8 @@ function getUniversalMessageId(message) {
     };
   };
 
-  // If we can't parse out a message id but don't care to debug it, we can just return our failure
+  // If we can't parse out a message id but don't care to debug it, we can just
+  // return our failure
   return UNABLE_TO_PARSE_MESSAGE_ID;
 };
 
@@ -103,7 +106,8 @@ function markImportantAddLabelsUnstarMessagesArchiveThread(thread) {
   Logger.log('Adding processed labels');
   // Add each processed label to the thread
   emailLabelPairs.forEach(function(emailLabelPair) {
-    // (we delay getting the actual label as long as possible because of rate limits:)
+    // (we delay getting the actual label as long as possible because of rate
+    // limits:)
     var actualLabel = GmailApp.getUserLabelByName(emailLabelPair[1]);
     thread.addLabel(actualLabel);
   });
